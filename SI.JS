@@ -46,11 +46,14 @@ window.onload = function() {
     }
 
     requestAnimationFrame(update);
+    document.addEventListener("keydown", moveShip); //keydown is whenever a user presses a key down and when this happens we check moveShip to see which one was pressed
 }
 
 function update(){
 
     requestAnimationFrame(update);
+
+    context.clearRect(0, 0, board.width, board.height);
 
     //ship is being drawn on canvas over and over again 
     context.drawImage(shipImg, ship.x, ship.y, ship.width, ship.height);
@@ -59,5 +62,11 @@ function update(){
 
 // the parameter e stands for event 
 function moveShip(e){
+    if((e.code == "ArrowLeft") && (ship.x - shipVelocityX >= 0)){
 
+        ship.x -= shipVelocityX; //move left one tile
+
+    }else if((e.code == "ArrowRight") && (ship.x + shipVelocityX + ship.width <= board.width)){
+        ship.x += shipVelocityX; //move right one tile
+    }
 }
