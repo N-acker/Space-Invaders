@@ -27,6 +27,23 @@ let ship = {
 let shipImg;
 let shipVelocityX = tileSize; //whenever we move the ship it moves one tile over
 
+//aliens 
+let alienArray = []; //holds all our aliens 
+let alienWidth = tileSize*2;
+let alienHeight = tileSize;
+let alienX = tileSize;
+let alienY = tileSize; 
+let alienImg;
+
+let alienRows = 2;
+let alienColumns = 3;
+let alienCount = 0; //the number of aliens to defeat 
+let alienVelocityX = 1 //alien moving speed
+
+//bullets
+let bulletArray = [];
+let bulletVelocityY = -10; //bullet moving speed
+
 window.onload = function() {
 
     board = document.getElementById("board");
@@ -45,6 +62,10 @@ window.onload = function() {
         context.drawImage(shipImg, ship.x, ship.y, ship.width, ship.height);
     }
 
+    alienImg = new Image();
+    alienImg.src = "./images/alien.png";
+    createAliens();
+
     requestAnimationFrame(update);
     document.addEventListener("keydown", moveShip); //keydown is whenever a user presses a key down and when this happens we check moveShip to see which one was pressed
 }
@@ -58,6 +79,25 @@ function update(){
     //ship is being drawn on canvas over and over again 
     context.drawImage(shipImg, ship.x, ship.y, ship.width, ship.height);
 
+    //alien is being drawn on canvas over and over again
+    for(let n=0; n<alienArray.length; n++){
+        let alien = alienArray[n];
+        if(alien.alive){
+            alien.x += alienVelocityX;
+
+            // if alien touches the boarders 
+            if((alien.x + alien.width >= board.width) || (alien.x <= 0)){
+                alienVelocityX *= -1;
+                alien.x += alienVelocityX*2
+
+                //move all aliens by one row when they touch the edge of the canvas
+                for(let m=0; m<alienArray.length; m++){
+                    alienArray[m].y += alienHeight; //if the y position is 2 it then becomes 3
+                }
+            }
+            context.drawImage(alienImg, alien.x, alien.y, alien.width, alien.height);
+        }
+    }
 }
 
 // the parameter e stands for event 
@@ -68,5 +108,38 @@ function moveShip(e){
 
     }else if((e.code == "ArrowRight") && (ship.x + shipVelocityX + ship.width <= board.width)){
         ship.x += shipVelocityX; //move right one tile
+    }
+}
+
+
+function createAliens(){
+    for(let i=0; i<alienColumns; i++ ){
+        for(let j=0; j<alienRows; j++){
+            let alien = {
+                img : alienImg,
+                x : alienX + i*alienWidth, //this is the x-coordinate of that specific alien
+                y : alienY + j*alienHeight, //this is the y-coordinate of that specific alien
+                width : alienWidth,
+                height : alienHeight, 
+                alive: true
+            }
+            alienArray.push(alien);
+        }
+    }
+    alienCount = alienArray.length;
+}
+
+function shoot(e){
+
+    if (e.code == "Space"){
+        //shoot
+        let bullet = {
+        x : ship.x + shipWidth*15/32, //places the bullet directly in front of the canon
+        y : ship.y,
+        width : tileSize/8,
+        height : tileSize/2,
+        used : false //if the bullet touches an alien it gets set to true indicating a bullet has been used
+        }
+
     }
 }
