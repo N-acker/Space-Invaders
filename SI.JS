@@ -44,6 +44,9 @@ let alienVelocityX = 1 //alien moving speed
 let bulletArray = [];
 let bulletVelocityY = -10; //bullet moving speed
 
+let score = 0;
+let gameOver = false;
+
 window.onload = function() {
 
     board = document.getElementById("board");
@@ -76,6 +79,20 @@ function update(){
 
     requestAnimationFrame(update);
 
+    if(gameOver){
+        context.clearRect(0, 0, board.width, board.height);
+        
+        context.fillStyle="red";
+        context.font="48px courier"
+        context.textAlign = "center"; 
+        context.fillText("GAME OVER", board.width/2, board.height/2 - 40);
+
+        context.fillStyle="white";
+        context.font="24px courier"
+        context.fillText("Score: " + score, board.width/2, board.height/2 + 20);
+        return;
+    }
+
     context.clearRect(0, 0, board.width, board.height);
 
     //ship is being drawn on canvas over and over again 
@@ -92,12 +109,16 @@ function update(){
                 alienVelocityX *= -1;
                 alien.x += alienVelocityX*2
 
-                //move all aliens by one row when they touch the edge of the canvas
+                //move all aliens down by one row when they touch the edge of the canvas
                 for(let m=0; m<alienArray.length; m++){
                     alienArray[m].y += alienHeight; //if the y position is 2 it then becomes 3
                 }
             }
             context.drawImage(alienImg, alien.x, alien.y, alien.width, alien.height);
+
+            if(alien.y >= ship.y){
+                gameOver = true;
+            }
         }
     }
 
@@ -115,6 +136,7 @@ function update(){
                 bullet.used = true;
                 alien.alive = false; 
                 alienCount--;
+                score += 100;
             }
         }
     }
@@ -136,6 +158,10 @@ function update(){
         bulletArray = []; // bullet array cleared to prevent bullet from previous level hitting new set of aliens in new level
         createAliens();
     }
+
+    context.fillStyle="white";
+    context.font="16px courier"
+    context.fillText(score, 5, 20);
 }
 
 
@@ -143,6 +169,11 @@ function update(){
 
 // the parameter e stands for event 
 function moveShip(e){
+    
+    if(gameOver){
+        return;
+    }
+
     if((e.code == "ArrowLeft") && (ship.x - shipVelocityX >= 0)){
 
         ship.x -= shipVelocityX; //move left one tile
@@ -171,6 +202,10 @@ function createAliens(){
 }
 
 function shoot(e){
+
+    if(gameOver){
+        return;
+    }
 
     if (e.code == "Space"){
         //shoot
