@@ -120,10 +120,21 @@ function update(){
     }
 
 
-        // clear bullets 
+    // clear bullets 
     while(bulletArray.length>0 && (bulletArray[0].used || bulletArray[0].y < 0)){
         bulletArray.shift(); //removes the first element of the array
         // console.log(bulletArray);
+    }
+
+    // next level
+    if (alienCount == 0){
+        // increase the number of aliens in columns and rows by 1 
+        alienColumns = Math.min(alienColumns + 1, columns/2 -2); //cap at 16/2 -2 = 6 to prevent from touching the canvas
+        alienRows = Math.min(alienRows + 1, rows - 4); //cap at 16-4 = 12 to prevent from touching the ship immediatley 
+        alienVelocityX += 0.2; //increases the alien movement speed 
+        alienArray = [];
+        bulletArray = []; // bullet array cleared to prevent bullet from previous level hitting new set of aliens in new level
+        createAliens();
     }
 }
 
