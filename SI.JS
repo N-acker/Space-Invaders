@@ -68,6 +68,8 @@ window.onload = function() {
 
     requestAnimationFrame(update);
     document.addEventListener("keydown", moveShip); //keydown is whenever a user presses a key down and when this happens we check moveShip to see which one was pressed
+    document.addEventListener("keyup", shoot); //keyup means you have to release the key in order to shoot
+
 }
 
 function update(){
@@ -98,7 +100,35 @@ function update(){
             context.drawImage(alienImg, alien.x, alien.y, alien.width, alien.height);
         }
     }
+
+    // bullets
+    for(let k=0; k<bulletArray.length; k++){
+        let bullet = bulletArray[k];
+        bullet.y += bulletVelocityY
+        context.fillStyle="blue";
+        context.fillRect(bullet.x, bullet.y, bullet.width, bullet.height);
+
+        //bullet collision with aliens 
+        for( j=0; j<alienArray.length; j++){
+            let alien = alienArray[j];
+            if(!bullet.used && alien.alive && detectcollision(bullet, alien)){
+                bullet.used = true;
+                alien.alive = false; 
+                alienCount--;
+            }
+        }
+    }
+
+
+        // clear bullets 
+    while(bulletArray.length>0 && (bulletArray[0].used || bulletArray[0].y < 0)){
+        bulletArray.shift(); //removes the first element of the array
+        // console.log(bulletArray);
+    }
 }
+
+
+
 
 // the parameter e stands for event 
 function moveShip(e){
@@ -141,5 +171,17 @@ function shoot(e){
         used : false //if the bullet touches an alien it gets set to true indicating a bullet has been used
         }
 
+        bulletArray.push(bullet); //the bullet object gets pushed to the end of the array
+
     }
 }
+
+
+// this function detetcs when 2 objects (specifically 2 rectangles) collide
+function detectcollision(a, b){
+    return a.x < b.x + b.width &&   //a's top left corner doesn't reach b's top right corner 
+           a.x + a.width > b.x &&   //a's top right corner passes b's top left corner  
+           a.y < b.y + b.height &&  //a's top left corner doesn't reach b's bottom left corner
+           a.y + a.height  > b.y;  //a's bottom left corner passes b's top left corner 
+}
+
