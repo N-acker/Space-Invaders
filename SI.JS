@@ -33,7 +33,11 @@ let alienWidth = tileSize*2;
 let alienHeight = tileSize;
 let alienX = tileSize;
 let alienY = tileSize; 
-let alienImg;
+let alienImgWhite;
+let alienImgCyan;
+let alienImgMagenta;
+let alienImgYellow;
+let alienImages = [];
 
 let alienRows = 2;
 let alienColumns = 3;
@@ -65,8 +69,22 @@ window.onload = function() {
         context.drawImage(shipImg, ship.x, ship.y, ship.width, ship.height);
     }
 
-    alienImg = new Image();
-    alienImg.src = "./images/alien.png";
+    alienImgWhite = new Image();
+    alienImgWhite.src = "./images/alien.png";
+    alienImages.push(alienImgWhite);
+
+    alienImgCyan = new Image();
+    alienImgCyan.src = "./images/alien-cyan.png";
+    alienImages.push(alienImgCyan);
+
+    alienImgMagenta = new Image();
+    alienImgMagenta.src = "./images/alien-magenta.png";
+    alienImages.push(alienImgMagenta);
+
+    alienImgYellow = new Image();
+    alienImgYellow.src = "./images/alien-yellow.png";
+    alienImages.push(alienImgYellow);
+
     createAliens();
 
     requestAnimationFrame(update);
@@ -81,7 +99,7 @@ function update(){
 
     if(gameOver){
         context.clearRect(0, 0, board.width, board.height);
-        
+
         context.fillStyle="red";
         context.font="48px courier"
         context.textAlign = "center"; 
@@ -114,7 +132,7 @@ function update(){
                     alienArray[m].y += alienHeight; //if the y position is 2 it then becomes 3
                 }
             }
-            context.drawImage(alienImg, alien.x, alien.y, alien.width, alien.height);
+            context.drawImage(alien.img, alien.x, alien.y, alien.width, alien.height);
 
             if(alien.y >= ship.y){
                 gameOver = true;
@@ -186,9 +204,13 @@ function moveShip(e){
 
 function createAliens(){
     for(let i=0; i<alienColumns; i++ ){
+        
         for(let j=0; j<alienRows; j++){
+
+            let randomAlienImg = alienImages[Math.floor(Math.random() * alienImages.length)];
+            
             let alien = {
-                img : alienImg,
+                img : randomAlienImg,
                 x : alienX + i*alienWidth, //this is the x-coordinate of that specific alien
                 y : alienY + j*alienHeight, //this is the y-coordinate of that specific alien
                 width : alienWidth,
